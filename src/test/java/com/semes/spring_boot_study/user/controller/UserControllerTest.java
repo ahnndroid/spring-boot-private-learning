@@ -2,6 +2,7 @@ package com.semes.spring_boot_study.user.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -12,8 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,8 +29,8 @@ import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
 import com.semes.springbootstudy.SpringBootPrivateLearningApplication;
+import com.semes.springbootstudy.user.domain.User;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootPrivateLearningApplication.class, properties = "classpath:application.properties", webEnvironment = WebEnvironment.MOCK)
@@ -42,12 +45,15 @@ public class UserControllerTest {
 	
 	private MockHttpServletRequestBuilder mockHttpRequest;
 	
-	private List<String> memberIds;
+	private static List<User> testUsers;
+	
+	private static Long updateTargetId;
 	
 	
-	@Before
-	public void setup() {
-		memberIds = new ArrayList<String>();
+	@BeforeClass
+	public static void setup() {
+		testUsers = new ArrayList<User>();
+		updateTargetId = -1L;
 	}
 	
 	
@@ -81,8 +87,6 @@ public class UserControllerTest {
 									.param("name", testMemberId)
 									.param("email", testMemberId + "@foo.bar");
 		
-		this.memberIds.add(testMemberId);
-		
 		this.mockMvc.perform(this.mockHttpRequest)
 			.andDo(print())
 			.andExpect(status().is3xxRedirection())
@@ -91,7 +95,6 @@ public class UserControllerTest {
 		System.out.println("====== [FINISHED] test002_정상___회원가입_처리 =======\n\n");
 	}
 	
-	
 	@Test
 	public void test003_정상___가입_사용자_리스트_조회() throws Exception {
 		
@@ -99,11 +102,14 @@ public class UserControllerTest {
 		
 		this.mockHttpRequest = get("/users");
 		
-		this.mockMvc.perform(this.mockHttpRequest)
+		Map<String, Object> map = this.mockMvc.perform(this.mockHttpRequest)
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(view().name("/user/list"))
-			.andExpect(model().attributeExists("users"));
+			.andExpect(model().attributeExists("users"))
+			.andReturn().getModelAndView().getModel();
+		
+		this.extractUsersFromModelMap(map);
 		
 		System.out.println("====== [FINISHED] test003_정상___가입_사용자_리스트_조회 =======\n\n");
 	}
@@ -111,9 +117,9 @@ public class UserControllerTest {
 	@Test
 	public void test004_정상___가입정보_수정_페이지_방문() throws Exception {
 				
-		System.out.println("====== [BEGIN] test004_정상___가입정보_수정_페이지_방문 =======");
+		System.out.println("====== [BEGIN] test004_정상___가입정보_수정_페이지_방문 =======");	
 		
-		this.mockHttpRequest = get("/users/1/form");
+		this.mockHttpRequest = get("/users/" + this.getIdOfTargetTestUser() + "/form");
 		
 		this.mockMvc.perform(this.mockHttpRequest)
 			.andDo(print())
@@ -124,8 +130,50 @@ public class UserControllerTest {
 	}
 	
 	@Test
-	public void test005_정상___사용자_정보_수정() {
+	public void test005_정상___사용자_정보_수정() throws Exception {
 	
+		System.out.println("====== [BEGIN] test005_정상___사용자_정보_수정 ======");
+		
+		this.mockHttpRequest = put("/users/" + this.getIdOfTargetTestUser());
+		
+		this.mockMvc.perform(this.mockHttpRequest)
+			.andDo(print())
+			.andExpect(status().is3xxRedirection())
+			.andExpect(redirectedUrl("/users"));
+		
+		System.out.println("====== [BEGIN] test005_정상___사용자_정보_수정 ======\n\n");
 	}
-
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////      [BEGIN] Private util methods      /////////////////////////	
+	/**
+	 * 테스트 시 이용될 사용자 추출을 위한 내부 유틸 메소드
+	 * @param users
+	 */
+	private void extractUsersFromModelMap(Map<String, Object> modelMap) {
+		
+		@SuppressWarnings("unchecked")
+		List<User> _testUsers = (List<User>) modelMap.get("users");
+		
+		UserControllerTest.testUsers = _testUsers;
+		
+	}
+	
+	/**
+	 * 테스트 사용자 ID 리스트 중 임의의 ID 랜덤 추출을 위한 내부 유틸 메소드
+	 * @return
+	 */
+	private Long getIdOfTargetTestUser() {
+		
+		if (UserControllerTest.updateTargetId != -1L) {
+			return UserControllerTest.updateTargetId;
+		}
+		
+		UserControllerTest.updateTargetId = UserControllerTest.testUsers.get(new Random().nextInt(Math.abs(UserControllerTest.testUsers.size() - 1))).getId();
+		
+		return UserControllerTest.updateTargetId;
+	}
+	/////////////////////////      [FINISHED] Private util methods      /////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
 }
