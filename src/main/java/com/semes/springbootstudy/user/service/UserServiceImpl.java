@@ -1,10 +1,10 @@
 package com.semes.springbootstudy.user.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.semes.springbootstudy.user.domain.User;
@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
 	 * 가입 사용자 리스트 조회 서비스 구현체
 	 */
 	@Override
-	public List<User> getUsers(int page, int size) {
-		Page<User> users = userRepository.findAll(PageRequest.of(page, size));
+	public List<User> getUsers(Pageable pageable) {
+		Page<User> users = userRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		return users.getContent();
 	}
 

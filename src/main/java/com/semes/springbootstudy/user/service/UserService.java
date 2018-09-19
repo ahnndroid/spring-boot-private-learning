@@ -2,6 +2,8 @@ package com.semes.springbootstudy.user.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import com.semes.springbootstudy.user.domain.User;
 import com.semes.springbootstudy.user.dto.UserDto;
 
@@ -22,7 +24,7 @@ public interface UserService {
 	 * 가입 사용자 리스트 조회 서비스
 	 * @return
 	 */
-	public List<User> getUsers(int page, int size);
+	public List<User> getUsers(Pageable pageable);
 	
 	/**
 	 * 아이디에 해당하는 사용자 정보 조회 서비스

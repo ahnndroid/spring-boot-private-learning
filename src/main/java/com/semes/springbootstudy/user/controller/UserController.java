@@ -1,6 +1,8 @@
 package com.semes.springbootstudy.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,8 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.semes.springbootstudy.user.dto.UserDto;
 import com.semes.springbootstudy.user.service.UserService;
 
@@ -51,13 +51,8 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("")
-	public String getUsers(
-			@RequestParam(defaultValue = "0") int page, 
-			@RequestParam(defaultValue = "20") int size, 
-			Model model) {
-		System.out.println("Page = " + page + ", Size = " + size);
-
-		model.addAttribute("users", userService.getUsers(page, size));
+	public String getUsers(@PageableDefault(page = 0, size = 20, sort = "id") Pageable pageable, Model model) {
+		model.addAttribute("users", userService.getUsers(pageable));
 		return "/user/list";
 	}
 	
