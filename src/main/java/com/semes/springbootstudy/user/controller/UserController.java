@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.semes.springbootstudy.user.dto.UserDto;
 import com.semes.springbootstudy.user.service.UserService;
@@ -50,8 +51,13 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("")
-	public String getUsers(Model model) {
-		model.addAttribute("users", userService.getUsers());
+	public String getUsers(
+			@RequestParam(defaultValue = "0") int page, 
+			@RequestParam(defaultValue = "20") int size, 
+			Model model) {
+		System.out.println("Page = " + page + ", Size = " + size);
+
+		model.addAttribute("users", userService.getUsers(page, size));
 		return "/user/list";
 	}
 	
@@ -75,7 +81,8 @@ public class UserController {
 	 */
 	@PutMapping("/{id}")
 	public String updateUser(@PathVariable Long id, UserDto.UpdateUserDto dto) {
-		return "";
+		userService.updateUser(id, dto);
+		return "redirect:/users";
 	}
 	
 }

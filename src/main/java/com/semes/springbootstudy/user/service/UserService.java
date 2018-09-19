@@ -22,7 +22,7 @@ public interface UserService {
 	 * 가입 사용자 리스트 조회 서비스
 	 * @return
 	 */
-	public List<User> getUsers();
+	public List<User> getUsers(int page, int size);
 	
 	/**
 	 * 아이디에 해당하는 사용자 정보 조회 서비스
@@ -30,4 +30,11 @@ public interface UserService {
 	 * @return
 	 */
 	public User findById(Long id);
+	
+	/**
+	 * 사용자 정보 갱신 서비스
+	 * @param dto
+	 * @return
+	 */
+	public User updateUser(Long id, UserDto.UpdateUserDto dto);
 }

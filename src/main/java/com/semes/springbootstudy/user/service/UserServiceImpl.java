@@ -3,10 +3,13 @@ package com.semes.springbootstudy.user.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.semes.springbootstudy.user.domain.User;
 import com.semes.springbootstudy.user.dto.UserDto.SignUpDto;
+import com.semes.springbootstudy.user.dto.UserDto.UpdateUserDto;
 import com.semes.springbootstudy.user.repository.UserRepository;
 
 /**
@@ -32,8 +35,9 @@ public class UserServiceImpl implements UserService {
 	 * 가입 사용자 리스트 조회 서비스 구현체
 	 */
 	@Override
-	public List<User> getUsers() {
-		return userRepository.findAll();
+	public List<User> getUsers(int page, int size) {
+		Page<User> users = userRepository.findAll(PageRequest.of(page, size));
+		return users.getContent();
 	}
 
 	/**
@@ -42,6 +46,17 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User findById(Long id) {		
 		return userRepository.findById(id).get();
+	}
+
+	/**
+	 * 사용자 정보 갱신 서비스 구현체
+	 */
+	@Override
+	public User updateUser(Long id, UpdateUserDto dto) {
+		User user = this.findById(id);
+		user.updateUserInfo(dto);
+		userRepository.save(user);
+		return user;
 	}
 
 }

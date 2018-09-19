@@ -1,6 +1,6 @@
 package com.semes.springbootstudy.user.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.semes.springbootstudy.user.domain.User;
 
@@ -9,6 +9,6 @@ import com.semes.springbootstudy.user.domain.User;
  * @author 안형진
  *
  */
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
 }

@@ -134,7 +134,9 @@ public class UserControllerTest {
 	
 		System.out.println("====== [BEGIN] test005_정상___사용자_정보_수정 ======");
 		
-		this.mockHttpRequest = put("/users/" + this.getIdOfTargetTestUser());
+		this.mockHttpRequest = put("/users/" + this.getIdOfTargetTestUser())
+								.param("name", "AAA")
+								.param("email", "AAA@foo.bar");
 		
 		this.mockMvc.perform(this.mockHttpRequest)
 			.andDo(print())
